@@ -1,0 +1,2 @@
+LinkedList$LinkedNode
+LinkedList

@@ -1,0 +1,4 @@
+SPOJ_WEEK1_Assignment3$InputReader
+SPOJ_WEEK1_Assignment3
+Main$InputReader
+Main
