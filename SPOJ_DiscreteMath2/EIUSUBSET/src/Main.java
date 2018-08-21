@@ -14,8 +14,8 @@ class Main {
 		int[] permutation = new int[n];
 		for (int i = 1; i <= length; i++) {
 			int temp = i;
-			for (int j = 1; j <= n; j++) {
-				permutation[n - j] = (((temp & 1) == 1) ? numbers[n - j] : -1);
+			for (int j = n-1; j >=0; j--) {
+				permutation[j] = (((temp & 1) == 1) ? numbers[j] : -1);
 				temp >>= 1;
 			}
 			res.append(arraytoString(permutation));
@@ -28,6 +28,29 @@ class Main {
 		String res = "";
 		for (int i = 0; i < arr.length; i++) {
 			res += ((arr[i] < 0) ? "" : arr[i] + " ");
+		}
+		return res + "\n";
+	}
+	static void dfs(int[] arr, ArrayList<String> chosen, int i,StringBuilder res) {
+		if (i == arr.length-1) {
+			if (!chosen.isEmpty()) {
+				res.append(lisToString(chosen));
+			}
+		} else {
+			dfs(arr,chosen,i+1,res);
+		}
+		chosen.add(arr[i]+" ");
+		if (i == arr.length-1) {
+			res.append(lisToString(chosen));
+		} else {
+			dfs(arr,chosen,i+1,res);
+		}
+		chosen.remove(chosen.size()-1);
+	}
+	static String lisToString(ArrayList<String> arr) {
+		String res = "";
+		for (String i : arr) {
+			res += i;
 		}
 		return res + "\n";
 	}

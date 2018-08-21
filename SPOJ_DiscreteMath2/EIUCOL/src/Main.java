@@ -6,15 +6,16 @@ class Main {
 
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
-		int n = scan.nextInt();
-		int[] rocks = scan.na(n);
-		int[] used = new int[200001];
-		Arrays.fill(used, 2000001);
-		used[rocks[0]] = 0;
-		for (int i = 1;i<n;i++) {
-			used[rocks[i]] = Math.min(used[rocks[i-1]] + 1, used[rocks[i]] + 1);
+		int[] money = new int[scan.nextInt()+1];
+		int[] prices = scan.na(3);
+		for (int i=1;i<money.length;i++) {
+			for (int j=0;j<3;j++) {
+				if (i >= prices[j]) {
+					money[i] = Math.max(money[i],((money[i-prices[j]] != 0)?money[i-prices[j]]+1:(i == prices[j])?1:0));
+				}
+			}
 		}
-		System.out.println(used[rocks[rocks.length-1]]);
+		System.out.println(money[money.length-1]);
 	}
 
 	static class InputReader {

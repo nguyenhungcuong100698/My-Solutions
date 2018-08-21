@@ -7,14 +7,67 @@ class Main {
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
 		int n = scan.nextInt();
-		int[] rocks = scan.na(n);
-		int[] used = new int[200001];
-		Arrays.fill(used, 2000001);
-		used[rocks[0]] = 0;
-		for (int i = 1;i<n;i++) {
-			used[rocks[i]] = Math.min(used[rocks[i-1]] + 1, used[rocks[i]] + 1);
+		Vertex[] list = readGraph(n, scan);
+		bfs(list[0]);
+		StringBuilder res = new StringBuilder();
+		for (int i=0;i<n;i++) {
+			if (list[i].water != 0) {
+				res.append(list[i].id +" "+(Math.round(list[i].water*1000)/1000.0)+"\n");
+			}
 		}
-		System.out.println(used[rocks[rocks.length-1]]);
+		System.out.println(res);
+	}
+
+	static void bfs(Vertex u) {
+		u.visited = true;
+		Queue<Vertex> queue = new LinkedList<Vertex>();
+		queue.add(u);
+		while (!queue.isEmpty()) {
+			Vertex current = queue.poll();
+			for (Vertex v : current.neighbors) {
+				if (!v.visited) {
+					v.water += current.water / current.neighbors.size();
+					queue.add(v);
+				}
+			}
+			if (!current.neighbors.isEmpty()) {
+				current.water = 0;
+			}
+		}
+	}
+
+	public static Vertex[] readGraph(int nVertices, InputReader scan) {
+		Vertex[] vertices = new Vertex[nVertices];
+		for (int i = 0; i < nVertices; ++i) {
+			vertices[i] = new Vertex(i, scan.nextDouble());
+		}
+		for (int i = 0; i < nVertices - 1; ++i) {
+			int u = scan.nextInt();
+			int v = scan.nextInt();
+			vertices[v].addNeighbor(vertices[u]);
+		}
+		return vertices;
+	}
+
+	static class Vertex {
+
+		public int id;
+		public List<Vertex> neighbors = new ArrayList<>();
+		public boolean visited = false;
+		public double water = 0;
+
+		public Vertex(int id, double water) {
+			this.id = id;
+			this.water = water;
+		}
+
+		public int getDeg() {
+			return this.neighbors.size();
+		}
+
+		public void addNeighbor(Vertex child) {
+			neighbors.add(child);
+		}
 	}
 
 	static class InputReader {

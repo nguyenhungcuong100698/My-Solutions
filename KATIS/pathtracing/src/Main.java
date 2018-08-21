@@ -1,20 +1,59 @@
-
 import java.io.*;
 import java.util.*;
 
 class Main {
-
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
-		int n = scan.nextInt();
-		int[] rocks = scan.na(n);
-		int[] used = new int[200001];
-		Arrays.fill(used, 2000001);
-		used[rocks[0]] = 0;
-		for (int i = 1;i<n;i++) {
-			used[rocks[i]] = Math.min(used[rocks[i-1]] + 1, used[rocks[i]] + 1);
+		ArrayList<Move> list = new ArrayList<>();
+		int startX = 0, startY = 0;
+		int x = 0, y = 0;
+		int bottom = 0, top = 0, left = 0, right = 0;
+		while (scan.hasNext()) {
+			String step = scan.next();
+			x += (step.equals("down")?1:step.equals("up")?-1:0);
+			y += (step.equals("right")?1:step.equals("left")?-1:0);
+			bottom = Math.max(bottom, x);
+			right = Math.max(right, y);
+			top = Math.min(top, x);
+			left = Math.min(left, y);
+			startX += ((x < 0 && step.equals("up")) ? 1 : 0);
+			startY += ((y < 0 && step.equals("left")) ? 1 : 0);
+			list.add(new Move(x, y));
 		}
-		System.out.println(used[rocks[rocks.length-1]]);
+		startX++;
+		startY++;
+		int row = bottom - top + 3, col = right - left + 3;
+		char[][] out = new char[row][col];
+		for (char[] i : out) {
+			Arrays.fill(i, ' ');
+		}
+		for (Move i : list) {
+			out[i.x + startX][i.y + startY] = '*';
+		}
+		out[startX][startY] = 'S';
+		out[x + startX][y + startY] = 'E';
+		StringBuilder res = new StringBuilder();
+		for (int i = 0; i < row; i++) {
+			for (int j = 0; j < col; j++) {
+				if (i == 0 || j == 0 || i == row - 1 || j == col - 1) {
+					res.append("#");
+				} else {
+					res.append(out[i][j]);
+				}
+			}
+			res.append("\n");
+		}
+		System.out.print(res);
+	}
+
+	static class Move {
+		int x;
+		int y;
+
+		public Move(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
 	}
 
 	static class InputReader {

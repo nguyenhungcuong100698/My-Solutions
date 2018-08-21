@@ -1,20 +1,86 @@
-
 import java.io.*;
 import java.util.*;
 
 class Main {
-
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
-		int n = scan.nextInt();
-		int[] rocks = scan.na(n);
-		int[] used = new int[200001];
-		Arrays.fill(used, 2000001);
-		used[rocks[0]] = 0;
-		for (int i = 1;i<n;i++) {
-			used[rocks[i]] = Math.min(used[rocks[i-1]] + 1, used[rocks[i]] + 1);
+		StringBuilder result = new StringBuilder();
+		int n, m, queries, sNode;
+		while ((n = scan.nextInt()) + (m = scan.nextInt()) + (queries = scan.nextInt())
+				+ (sNode = scan.nextInt()) != 0) {
+			Node[] nodes = new Node[n];
+			for (int i = 0; i < n; i++) {
+				nodes[i] = new Node(i);
+			}
+			for (int i = 0; i < m; i++) {
+				int u = scan.nextInt();
+				int v = scan.nextInt();
+				nodes[u].addEdge(new Edge(nodes[v], scan.nextInt(), scan.nextInt(), scan.nextInt()));
+			}
+			PriorityQueue<Node> queue = new PriorityQueue<>();
+			nodes[sNode].distance = 0;
+			queue.add(nodes[sNode]);
+			while (!queue.isEmpty()) {
+				Node current = queue.poll();
+				for (Edge edge : current.edges) {
+					int distance = edge.t0 + edge.d;
+
+					if (current.distance > edge.t0) {
+						if (edge.P == 0) {
+							distance = Integer.MAX_VALUE;
+						} else {
+							int steps = (current.distance - edge.t0 - 1) / edge.P + 1;
+							distance = steps * edge.P + edge.t0 + edge.d;
+						}
+					}
+					Node target = edge.target;
+					if (distance < target.distance) {
+						queue.remove(target);
+						target.distance = distance;
+						queue.add(target);
+					}
+				}
+			}
+			while (queries-- > 0) {
+				int time = nodes[scan.nextInt()].distance;
+				result.append((time != Integer.MAX_VALUE) ? time + "\n" : "Impossible\n");
+			}
+			result.append("\n");
 		}
-		System.out.println(used[rocks[rocks.length-1]]);
+		System.out.println(result);
+	}
+
+	static class Node implements Comparable<Node> {
+		public int id;
+		public ArrayList<Edge> edges = new ArrayList<>();
+		public int distance = Integer.MAX_VALUE;
+
+		public Node(int id) {
+			this.id = id;
+		}
+
+		public void addEdge(Edge e) {
+			this.edges.add(e);
+		}
+
+		@Override
+		public int compareTo(Node other) {
+			return this.distance - other.distance;
+		}
+	}
+
+	static class Edge {
+		public Node target = null;
+		public int t0;
+		public int P;
+		public int d;
+
+		public Edge(Node to, int beginTime, int P, int cost) {
+			this.target = to;
+			this.t0 = beginTime;
+			this.P = P;
+			this.d = cost;
+		}
 	}
 
 	static class InputReader {

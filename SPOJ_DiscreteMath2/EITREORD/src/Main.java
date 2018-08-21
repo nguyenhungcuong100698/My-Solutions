@@ -2,35 +2,28 @@ import java.io.*;
 import java.util.*;
 
 class Main {
+	static int[] pre;
+	static int[] in;
+	static StringBuilder res = new StringBuilder();
+
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
-		int n = scan.nextInt();
-		int[] preorder = new int[n];
-		int[] inorder = new int[n];
-		for (int i=0;i<n;i++) {
-			preorder[i] = scan.nextInt();
+		int nodes = scan.nextInt();
+		pre = scan.na(nodes);
+		in = new int[80001];
+		for (int i = 0; i < nodes; i++) {
+			in[scan.nextInt()] = i;
 		}
-		for (int i=0;i<n;i++) {
-			inorder[i] = scan.nextInt();
-		}
-		int rootIndex = 0;
+		postorder(0, 0, nodes - 1);
+		System.out.print(res);
 	}
-	static void postorder(int rootIndex, int start, int end,int[] pre, int[] in,StringBuilder res) {
-		if (start == end) {
-			res.append(in[start]);
-			in[start] = -1;
-			pre[start] = -1;
-		}else {
-			int i = 0;
-			int leftStart = 0;
-			while (i < in.length && in[i] != in[rootIndex]) {
-				if (in[i] == -1) {
-					leftStart = i+1;
-				}
-				i++;
-			}
-			
-		}
+
+	static void postorder(int preIndex, int left, int right) {
+		if (left > right) return;
+		int root = in[pre[preIndex]];
+		postorder(preIndex + 1, left, root - 1);
+		postorder(preIndex + 1 + root - left, root + 1, right);
+		res.append(pre[preIndex] + " ");
 	}
 
 	static class InputReader {

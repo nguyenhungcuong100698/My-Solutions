@@ -1,20 +1,37 @@
-
 import java.io.*;
 import java.util.*;
 
 class Main {
+	static int[] pre;
+	static int[] in;
+	static int[] deg;
 
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
-		int n = scan.nextInt();
-		int[] rocks = scan.na(n);
-		int[] used = new int[200001];
-		Arrays.fill(used, 2000001);
-		used[rocks[0]] = 0;
-		for (int i = 1;i<n;i++) {
-			used[rocks[i]] = Math.min(used[rocks[i-1]] + 1, used[rocks[i]] + 1);
+		int nodes = scan.nextInt();
+		pre = scan.na(nodes);
+		in = new int[80001];
+		deg = new int[nodes];
+		Arrays.fill(deg, 1);
+		for (int i = 0; i < nodes; i++) {
+			in[scan.nextInt()] = i;
 		}
-		System.out.println(used[rocks[rocks.length-1]]);
+		StringBuilder res = new StringBuilder();
+		postorder(0, 0, nodes - 1);
+		deg[pre[0]]--;
+		for (int i=0;i<nodes;i++) {
+			res.append(deg[i] +" ");
+		}
+		System.out.println(res);
+	}
+
+	static void postorder(int preIndex, int left, int right) {
+		if (left > right) return;
+		int root = in[pre[preIndex]];
+		if (root - 1 >= left) deg[pre[preIndex]]++;
+		if (right >= root +1) deg[pre[preIndex]]++;
+		postorder(preIndex + 1, left, root - 1);
+		postorder(preIndex + 1 + root - left, root + 1, right);
 	}
 
 	static class InputReader {

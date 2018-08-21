@@ -3,26 +3,52 @@ import java.io.*;
 import java.util.*;
 
 class Main {
+	static HashMap<String,Integer> hm = new HashMap<>();
+	static Vertex path = new Vertex(Integer.MAX_VALUE,0);
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
 		int n = scan.nextInt();
-		HashMap<String,Integer> hm = new HashMap<>();
 		Vertex[] list = readGraph(n,scan,hm);
-		dfs(list[0],hm);
-		long max = 0;
-		for (Vertex i : list) {
-			max = Math.max(max, i.current);
+		Vertex res = dfs(list[0], null);
+		if (res.current > path.current) {
+			path.current = res.current;
+			path.id = 0;
+		} else if (res.current == path.current) {
+			path.id = 0;
 		}
-		System.out.println(max);
+		System.out.println(path.id +" "+path.current);
 	}
 	
-	static void dfs(Vertex u,HashMap<String,Integer> hm) {
-		u.visited = true;
-		for (Vertex v : u.neighbor) {
-			if (!v.visited) {
-				v.current = u.current + hm.get(u.id+""+v.id);
-				dfs(v,hm);
+	static Vertex dfs(Vertex son, Vertex father) {
+		son.visited = true;
+		if (son.neighbors.size() == 1 && father != null && son.neighbors.get(0).id == father.id) {// this is a leave	
+			return son;
+		} else {// this is a node with more than one leave
+			ArrayList<Vertex> leaves = new ArrayList<>();
+			for (Vertex v : son.neighbors) {
+				if (!v.visited) {
+					v.current = son.current + hm.get(son.id+""+v.id);
+					leaves.add(dfs(v, son));
+				}
 			}
+			if (leaves.size() == 1) {// this node has one leave, return it
+				return leaves.get(0);
+			}
+			// find two leaves with largest k and smallest id
+			leaves.sort((a, b) ->{
+				int res = Long.compare(a.current, b.current);
+				if (res == 0) return a.id-b.id;
+				return -res;
+			});
+			long length = leaves.get(1).current + leaves.get(0).current - 2 * son.current;
+			int id = Math.min(leaves.get(1).id, leaves.get(0).id);
+			if (length > path.current) {// found new longest path
+				path.current = length;
+				path.id = id;
+			} else if (length == path.current) {// found path that has equal length to the longest path, update id
+				path.id = Math.min(path.id, id);
+			}
+			return leaves.get(0);
 		}
 	}
 	
@@ -46,15 +72,18 @@ class Main {
 	static class Vertex {
 
 		public int id;
-		public ArrayList<Vertex> neighbor = new ArrayList<>();
+		public ArrayList<Vertex> neighbors = new ArrayList<>();
 		public boolean visited = false;
 		public long current = 0;
 		public Vertex(int id) {
 			this.id = id;
 		}
-
+		public Vertex(int id,long current) {
+			this.id = id;
+			this.current = current;
+		}
 		public void addNeighbor(Vertex child) {
-			neighbor.add(child);
+			neighbors.add(child);
 		}
 	}
 

@@ -1,20 +1,10 @@
-
 import java.io.*;
 import java.util.*;
 
-class Main {
-
+class P185SUME {
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
 		int n = scan.nextInt();
-		int[] rocks = scan.na(n);
-		int[] used = new int[200001];
-		Arrays.fill(used, 2000001);
-		used[rocks[0]] = 0;
-		for (int i = 1;i<n;i++) {
-			used[rocks[i]] = Math.min(used[rocks[i-1]] + 1, used[rocks[i]] + 1);
-		}
-		System.out.println(used[rocks[rocks.length-1]]);
 	}
 
 	static class InputReader {

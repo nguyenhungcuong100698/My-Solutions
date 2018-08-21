@@ -1,20 +1,32 @@
-
 import java.io.*;
 import java.util.*;
 
 class Main {
-
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
 		int n = scan.nextInt();
-		int[] rocks = scan.na(n);
-		int[] used = new int[200001];
-		Arrays.fill(used, 2000001);
-		used[rocks[0]] = 0;
-		for (int i = 1;i<n;i++) {
-			used[rocks[i]] = Math.min(used[rocks[i-1]] + 1, used[rocks[i]] + 1);
+		int k = scan.nextInt();
+		int max = k;
+		PriorityQueue<Integer> processing = new PriorityQueue<>();
+		PriorityQueue<Integer> waiting = new PriorityQueue<>();
+		int servers = 1;
+		while (n-->0) {
+			int time = scan.nextInt();
+			while (!processing.isEmpty() && processing.peek() <= time) {
+				processing.poll();
+			}
+			while (!waiting.isEmpty()) {
+				processing.add(waiting.poll());
+			}
+			if (processing.size() < max) {
+				processing.add(time+1000);
+			} else {
+				servers++;
+				max += k;
+				waiting.add(time+1000);
+			}
 		}
-		System.out.println(used[rocks[rocks.length-1]]);
+		System.out.println(servers);
 	}
 
 	static class InputReader {
