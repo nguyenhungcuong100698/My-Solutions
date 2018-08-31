@@ -1,29 +1,79 @@
 import java.io.*;
 import java.util.*;
 
-class Main {
+ class Main {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		InputReader scan = new InputReader();
-		int n = scan.nextInt();
-		long f1 = 0, f2 = 0;
-		long c1 = 1, c2 = 1;
-		int[] trees = scan.na(n);
-		for (int i = 0; i < n; i++) {
-			long tempf = f2;
-			long tempc = c2;
-			if (f1 + trees[i] > f2) {
-				f2 = f1 + trees[i];
-				c2 = c1;
-			} else if (f1 + trees[i] == f2) {
-				c2 = (c1 + c2) % 1000000007;
-			}
-			f1 = tempf;
-			c1 = tempc;
+		Vertex[] list = readGraph(scan.nextInt(), scan);
+		StringBuilder res = new StringBuilder();
+		bfs(list[0]);
+		for (Vertex u : list) {
+			res.append(Math.round(u.money)+"\n");
 		}
-		System.out.println(f2 + " " + c2);
+		System.out.println(res);
+	}
+	static void bfs(Vertex u) {
+		u.visited = true;
+		Queue<Vertex> queue = new LinkedList<Vertex>();
+		queue.add(u);
+		while (!queue.isEmpty()) {
+			Vertex current = queue.poll();
+			for (Vertex v : current.neighbors) {
+				if (!v.visited) {
+					v.visited = true;
+					v.money = (current.money*v.percent)/100.0;
+					queue.add(v);
+				}
+			}
+		}
+	}
+	
+	public static Vertex[] readGraph(int nVertices, InputReader scan) {
+		Vertex[] vertices = new Vertex[nVertices];
+		for (int i = 0; i < nVertices; ++i) {
+			vertices[i] = new Vertex(i);
+			if (i==0) {
+				vertices[i].money = scan.nextDouble();
+			} else {
+				vertices[i].percent = scan.nextDouble();
+			}
+		}
+		for (int i = 0; i < nVertices - 1; ++i) {
+			int u = scan.nextInt();
+			int v = scan.nextInt();
+			vertices[u].addNeighbor(vertices[v]);
+			vertices[v].addNeighbor(vertices[u]);
+		}
+		return vertices;
 	}
 
+	static class Vertex implements Comparable<Vertex> {
+
+		public int id;
+		public List<Vertex> neighbors = new ArrayList<>();
+		public boolean visited = false;
+		public int level = 0;
+		public double money = 0;
+		public double percent = 0.0;
+		
+		public Vertex(int id) {
+			this.id = id;
+		}
+
+		public int getDeg() {
+			return this.neighbors.size();
+		}
+
+		public void addNeighbor(Vertex child) {
+			neighbors.add(child);
+		}
+
+		@Override
+		public int compareTo(Vertex other) {
+			return other.level - this.level;
+		}
+	}
 	static class InputReader {
 
 		InputStream is = System.in;
@@ -150,4 +200,5 @@ class Main {
 		}
 
 	}
+
 }

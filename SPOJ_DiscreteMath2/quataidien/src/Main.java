@@ -3,25 +3,94 @@ import java.util.*;
 
 class Main {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		InputReader scan = new InputReader();
 		int n = scan.nextInt();
-		long f1 = 0, f2 = 0;
-		long c1 = 1, c2 = 1;
-		int[] trees = scan.na(n);
-		for (int i = 0; i < n; i++) {
-			long tempf = f2;
-			long tempc = c2;
-			if (f1 + trees[i] > f2) {
-				f2 = f1 + trees[i];
-				c2 = c1;
-			} else if (f1 + trees[i] == f2) {
-				c2 = (c1 + c2) % 1000000007;
+		int start = scan.nextInt();
+		Vertex[] list = readGraph(n, scan);
+		StringBuilder res = new StringBuilder();
+		dfs(list[start], new Stack<>());
+		for (Vertex u : list) {
+			if (u.isLeave && u.isOverLoad) {
+				res.append(u.id + " ");
 			}
-			f1 = tempf;
-			c1 = tempc;
 		}
-		System.out.println(f2 + " " + c2);
+		System.out.println(res);
+	}
+
+	static long dfs(Vertex u, Stack<Vertex> stack) {
+		u.visited = true;
+		stack.add(u);
+		if (u.isLeave) {
+			return u.consumption;
+		}
+		for (Edge e : u.neighbors) {
+			if (!e.ep.visited) {
+				long res = dfs(e.ep, stack);
+				u.sum += res;
+				if (e.weight >= res * 1.1)
+					continue;
+				Vertex t;
+				do {
+					t = stack.pop();
+					t.isOverLoad = true;
+				} while (t != e.ep);
+			}
+		}
+		return u.sum;		
+	}
+
+	public static Vertex[] readGraph(int nVertices, InputReader scan) {
+		Vertex[] vertices = new Vertex[nVertices];
+		for (int i = 0; i < nVertices; ++i) {
+			vertices[i] = new Vertex(i);
+		}
+		for (int i = 0; i < nVertices - 1; ++i) {
+			int u = scan.nextInt();
+			int v = scan.nextInt();
+			int w = scan.nextInt();
+			vertices[u].addNeighbor(new Edge(vertices[v], w));
+			vertices[v].addNeighbor(new Edge(vertices[u], w));
+		}
+		while (scan.hasNext()) {
+			int index = scan.nextInt();
+			vertices[index].consumption = scan.nextLong();
+			vertices[index].isLeave = true;
+		}
+		return vertices;
+	}
+
+	static class Edge {
+		public Vertex ep = null;
+		public int weight = 0;
+
+		public Edge(Vertex ep, int weight) {
+			this.ep = ep;
+			this.weight = weight;
+		}
+	}
+
+	static class Vertex {
+
+		public int id;
+		public List<Edge> neighbors = new ArrayList<>();
+		public boolean visited = false;
+		public long consumption = 0;
+		public boolean isLeave = false;
+		public boolean isOverLoad = false;
+		public long sum = 0;
+
+		public Vertex(int id) {
+			this.id = id;
+		}
+
+		public int getDeg() {
+			return this.neighbors.size();
+		}
+
+		public void addNeighbor(Edge child) {
+			neighbors.add(child);
+		}
 	}
 
 	static class InputReader {
@@ -150,4 +219,5 @@ class Main {
 		}
 
 	}
+
 }

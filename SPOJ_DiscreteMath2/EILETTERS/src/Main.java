@@ -4,49 +4,18 @@ import java.util.*;
 class Main {
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader(System.in);
-		StringBuilder result = new StringBuilder();
-		int testcases = scan.nextInt();
-		while (testcases-- > 0) {
-			int n = scan.nextInt();
-			long budget = scan.nextLong();
-			Robot[] robots = new Robot[n];
-			for (int i = 0; i < n; i++) {
-				robots[i] = new Robot(scan.nextLong(), scan.nextLong());
+		String pattern = scan.nextLine(), letter = scan.nextLine();
+		int k = 0,count = 0;
+		for (int i = 0; i < letter.length(); i++) {
+			if (pattern.charAt(k) == letter.charAt(i)) {
+				k++;
 			}
-			long low = 1, high = 1000000000000l, middle = 0, ans = -1;
-			while (low <= high) {
-				middle = (low + high) >> 1;
-				if (calc(robots, middle, budget)) {
-					ans = middle;
-					low = middle + 1;
-				} else {
-					high = middle - 1;
-				}
-			}
-			result.append(ans + "\n");
-		}
-		System.out.println(result);
-	}
-
-	static boolean calc(Robot[] robots, long productivity, long budget) {
-		for (Robot rb : robots) {
-			if (rb.productivity <= productivity) {
-				if ((budget / rb.cost) < (productivity - rb.productivity))
-					return false;
-				budget -= (productivity - rb.productivity) * rb.cost;
+			if (k == pattern.length()) {
+				count++;
+				k = 0;
 			}
 		}
-		return (budget >= 0);
-	}
-
-	static class Robot {
-		public long productivity;
-		public long cost;
-
-		public Robot(long products, long money) {
-			this.productivity = products;
-			this.cost = money;
-		}
+		System.out.println(count);
 	}
 
 	static class InputReader {

@@ -2,26 +2,61 @@ import java.io.*;
 import java.util.*;
 
 class Main {
-
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
 		int n = scan.nextInt();
-		long f1 = 0, f2 = 0;
-		long c1 = 1, c2 = 1;
-		int[] trees = scan.na(n);
-		for (int i = 0; i < n; i++) {
-			long tempf = f2;
-			long tempc = c2;
-			if (f1 + trees[i] > f2) {
-				f2 = f1 + trees[i];
-				c2 = c1;
-			} else if (f1 + trees[i] == f2) {
-				c2 = (c1 + c2) % 1000000007;
-			}
-			f1 = tempf;
-			c1 = tempc;
+		int m = scan.nextInt();
+		int[] parents = new int[n];
+		for (int i = 0; i < n; i++)
+			parents[i] = i;
+		long[] sum = new long[n];
+		Edge[] edges = new Edge[m];
+		for (int i = 0; i < m; i++) {
+			int u = scan.nextInt() - 1;
+			int v = scan.nextInt() - 1;
+			long w = scan.nextLong();
+			edges[i] = new Edge(w, u, v);
 		}
-		System.out.println(f2 + " " + c2);
+		Arrays.sort(edges);
+		for (Edge e : edges) {
+			unite(parents, sum, e);
+		}
+		long max = 0;
+		for (int i = 0; i < n; i++) {
+			max = Math.max(max, sum[i]);
+		}
+		System.out.println(max);
+	}
+
+	public static int root(int[] p, int x) {
+		return x == p[x] ? x : (p[x] = root(p, p[x]));
+	}
+
+	public static void unite(int[] p, long[] sum, Edge e) {
+		int a = root(p, e.a);
+		int b = root(p, e.b);
+		if (a != b) {
+			p[a] = b;
+			sum[b] += sum[a] + e.weight;
+		}
+	}
+
+	static class Edge implements Comparable<Edge> {
+		long weight;
+		int a;
+		int b;
+
+		public Edge(long weight, int a, int b) {
+			this.weight = weight;
+			this.a = a;
+			this.b = b;
+		}
+
+		@Override
+		public int compareTo(Edge o) {
+			return Long.compare(this.weight, o.weight);
+		}
+
 	}
 
 	static class InputReader {

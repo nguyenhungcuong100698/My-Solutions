@@ -2,32 +2,46 @@ import java.io.*;
 import java.util.*;
 
 class Main {
+	static int n, m;
 
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
-		int n = scan.nextInt();
-		long f1 = 0, f2 = 0;
-		long c1 = 1, c2 = 1;
-		int[] trees = scan.na(n);
+		n = scan.nextInt();
+		m = scan.nextInt();
+		long[][] map = scan.nmLong(n, m);
+		int[][] c = new int[n][m];
+		c[0][0] = 1;
 		for (int i = 0; i < n; i++) {
-			long tempf = f2;
-			long tempc = c2;
-			if (f1 + trees[i] > f2) {
-				f2 = f1 + trees[i];
-				c2 = c1;
-			} else if (f1 + trees[i] == f2) {
-				c2 = (c1 + c2) % 1000000007;
+			for (int j = 0; j < m; j++) {
+				if (isValid(i - 1, j) && isValid(i, j - 1)) {
+					if (map[i - 1][j] > map[i][j - 1]) {
+						c[i][j] = c[i - 1][j];
+					} else if (map[i - 1][j] < map[i][j - 1]) {
+						c[i][j] = c[i][j - 1];
+					} else {
+						c[i][j] = (c[i - 1][j] + c[i][j - 1]) % 10000000;
+					}
+					map[i][j] += Math.max(map[i - 1][j], map[i][j - 1]);
+				} else if (isValid(i - 1, j)) {
+					map[i][j] += map[i - 1][j];
+					c[i][j] = c[i-1][j];
+				} else if (isValid(i, j - 1)) {
+					map[i][j] += map[i][j - 1];
+					c[i][j] = c[i][j-1];
+				}
 			}
-			f1 = tempf;
-			c1 = tempc;
 		}
-		System.out.println(f2 + " " + c2);
+		System.out.println(map[n - 1][m - 1] + " " + c[n-1][m-1]);
+	}
+
+	static boolean isValid(int x, int y) {
+		return (x >= 0 && x < n && y >= 0 && y < m);
 	}
 
 	static class InputReader {
 
 		InputStream is = System.in;
-		byte[] inbuf = new byte[1 << 23];
+		byte[] inbuf = new byte[1 << 24];
 		int lenbuf = 0, ptrbuf = 0;
 
 		public InputReader() throws IOException {
@@ -96,6 +110,26 @@ class Main {
 			char[][] map = new char[n][];
 			for (int i = 0; i < n; i++) {
 				map[i] = ns(m);
+			}
+			return map;
+		}
+
+		public int[][] nmInt(int n, int m) {
+			int[][] map = new int[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextInt();
+				}
+			}
+			return map;
+		}
+
+		public long[][] nmLong(int n, int m) {
+			long[][] map = new long[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextLong();
+				}
 			}
 			return map;
 		}

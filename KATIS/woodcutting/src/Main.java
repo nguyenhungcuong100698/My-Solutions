@@ -5,23 +5,25 @@ class Main {
 
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
-		int n = scan.nextInt();
-		long f1 = 0, f2 = 0;
-		long c1 = 1, c2 = 1;
-		int[] trees = scan.na(n);
-		for (int i = 0; i < n; i++) {
-			long tempf = f2;
-			long tempc = c2;
-			if (f1 + trees[i] > f2) {
-				f2 = f1 + trees[i];
-				c2 = c1;
-			} else if (f1 + trees[i] == f2) {
-				c2 = (c1 + c2) % 1000000007;
+		int test = scan.nextInt();
+		while (test-->0) {
+			int cus = scan.nextInt();
+			long[] customers = new long[cus];
+			for (int i=0;i<cus;i++) {
+				int n = scan.nextInt();
+				while (n-->0) {
+					customers[i] += scan.nextLong();
+				}
 			}
-			f1 = tempf;
-			c1 = tempc;
+			Arrays.sort(customers);
+			double wait = 0.0, sum = 0.0;
+			for (int i=0;i<cus;i++) {
+				wait += customers[i];
+				sum += wait;
+			}
+			sum /= cus;
+			System.out.println(sum);
 		}
-		System.out.println(f2 + " " + c2);
 	}
 
 	static class InputReader {
@@ -96,6 +98,26 @@ class Main {
 			char[][] map = new char[n][];
 			for (int i = 0; i < n; i++) {
 				map[i] = ns(m);
+			}
+			return map;
+		}
+
+		public int[][] nmInt(int n, int m) {
+			int[][] map = new int[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextInt();
+				}
+			}
+			return map;
+		}
+
+		public long[][] nmLong(int n, int m) {
+			long[][] map = new long[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextLong();
+				}
 			}
 			return map;
 		}
