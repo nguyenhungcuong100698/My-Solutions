@@ -4,55 +4,21 @@ import java.util.*;
 class Main {
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
-		int n = scan.nextInt();
-		int m = scan.nextInt();
-		TreeSet<Edge> p = new TreeSet<>();
-		Vertex[] vertices = new Vertex[n];
-		for (int i = 0; i < n; i++) {
-			vertices[i] = new Vertex(i);
+		StringBuilder res = new StringBuilder();
+		int test = scan.nextInt();
+		while (test-- > 0) {
+			long a = scan.nextLong(), b = scan.nextLong();
+			long c = Math.max(a, b);
+			a = Math.min(a, b);
+			b = c;
+			long count = 1, i = 1;
+			while (i <= b * 2) {
+				count += (i > b) ? Math.max(0, (a + b + 1 - i)) : (i < a) ? (i + 1) : (a + 1);
+				i = i * 2 + 1;
+			}
+			res.append(count + "\n");
 		}
-		for (int i = 0; i < m; i++) {
-			int u = scan.nextInt() - 1;
-			int v = scan.nextInt() - 1;
-			int w = scan.nextInt();
-			vertices[u].addEdge(new Edge(w, vertices[v]));
-			vertices[v].addEdge(new Edge(w, vertices[u]));
-		}
-		long max = 0;
-		for (int i = 0; i < n; i++) {
-			
-		}
-		System.out.println(max);
-	}
-
-	static class Vertex {
-		public int id;
-		public boolean visited = false;
-		ArrayList<Edge> edgeList = new ArrayList<>();
-
-		public Vertex(int id) {
-			this.id = id;
-		}
-
-		public void addEdge(Edge child) {
-			this.edgeList.add(child);
-		}
-	}
-
-	static class Edge implements Comparable<Edge> {
-		int weight;
-		Vertex ep;
-
-		public Edge(int weight, Vertex ep) {
-			this.weight = weight;
-			this.ep = ep;
-		}
-
-		@Override
-		public int compareTo(Edge o) {
-			return this.weight - o.weight;
-		}
-
+		System.out.println(res);
 	}
 
 	static class InputReader {
@@ -82,6 +48,15 @@ class Main {
 			}
 			ptrbuf--;
 			return true;
+		}
+
+		public StringBuilder printIntArr(int[] ar, int n) {
+			StringBuilder res = new StringBuilder();
+			for (int i = 0; i < n; i++) {
+				res.append(ar[i] + " ");
+			}
+			res.append("\n");
+			return res;
 		}
 
 		public boolean isSpaceChar(int c) {
@@ -127,6 +102,26 @@ class Main {
 			char[][] map = new char[n][];
 			for (int i = 0; i < n; i++) {
 				map[i] = ns(m);
+			}
+			return map;
+		}
+
+		public int[][] nmInt(int n, int m) {
+			int[][] map = new int[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextInt();
+				}
+			}
+			return map;
+		}
+
+		public long[][] nmLong(int n, int m) {
+			long[][] map = new long[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextLong();
+				}
 			}
 			return map;
 		}

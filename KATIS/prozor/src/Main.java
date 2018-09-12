@@ -2,57 +2,56 @@ import java.io.*;
 import java.util.*;
 
 class Main {
+
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
-		int n = scan.nextInt();
-		int m = scan.nextInt();
-		TreeSet<Edge> p = new TreeSet<>();
-		Vertex[] vertices = new Vertex[n];
-		for (int i = 0; i < n; i++) {
-			vertices[i] = new Vertex(i);
+		int row = scan.nextInt(), col = scan.nextInt(), k = scan.nextInt();
+		char[][] map = scan.nm(row, col);
+		int max = 0, x = -1, y = -1;
+		for (int i = k - 1; i < row; i++) {
+			for (int j = k - 1; j < col; j++) {
+				int res = count(map, i, j, k);
+				if (res > max) {
+					max = res;
+					x = i;
+					y = j;
+				}
+			}
 		}
-		for (int i = 0; i < m; i++) {
-			int u = scan.nextInt() - 1;
-			int v = scan.nextInt() - 1;
-			int w = scan.nextInt();
-			vertices[u].addEdge(new Edge(w, vertices[v]));
-			vertices[v].addEdge(new Edge(w, vertices[u]));
+		StringBuilder res = new StringBuilder();
+		res.append(max+"\n");
+		for (int j = y; j >= y - k + 1; j--) {
+			map[x][j] = '-';
+			map[x-k+1][j] = '-';
 		}
-		long max = 0;
-		for (int i = 0; i < n; i++) {
-			
+		for (int i = x;i>=x-k+1;i--) {
+			map[i][y-k+1] = '|';
+			map[i][y] = '|';
 		}
-		System.out.println(max);
+		map[x-k+1][y-k+1] = '+';
+		map[x-k+1][y] = '+';
+		map[x][y-k+1] = '+';
+		map[x][y] = '+';
+		for (int i=0;i<row;i++) {
+			for (int j=0;j<col;j++) {
+				res.append(map[i][j]);
+			}
+			res.append("\n");
+		}
+		System.out.println(res);
 	}
 
-	static class Vertex {
-		public int id;
-		public boolean visited = false;
-		ArrayList<Edge> edgeList = new ArrayList<>();
+	static int count(char[][] map, int x, int y, int k) {
+		int count = 0;
+		if (x - k + 2 <= 0 || y - k + 2 <= 0)
+			return -1;
+		for (int i = x - k + 2; i < x; i++) {
+			for (int j = y - k + 2; j < y; j++) {
+				count += (map[i][j] == '*') ? 1 : 0;
+			}
 
-		public Vertex(int id) {
-			this.id = id;
 		}
-
-		public void addEdge(Edge child) {
-			this.edgeList.add(child);
-		}
-	}
-
-	static class Edge implements Comparable<Edge> {
-		int weight;
-		Vertex ep;
-
-		public Edge(int weight, Vertex ep) {
-			this.weight = weight;
-			this.ep = ep;
-		}
-
-		@Override
-		public int compareTo(Edge o) {
-			return this.weight - o.weight;
-		}
-
+		return count;
 	}
 
 	static class InputReader {
@@ -82,6 +81,15 @@ class Main {
 			}
 			ptrbuf--;
 			return true;
+		}
+
+		public StringBuilder printIntArr(int[] ar, int n) {
+			StringBuilder res = new StringBuilder();
+			for (int i = 0; i < n; i++) {
+				res.append(ar[i] + " ");
+			}
+			res.append("\n");
+			return res;
 		}
 
 		public boolean isSpaceChar(int c) {
@@ -127,6 +135,26 @@ class Main {
 			char[][] map = new char[n][];
 			for (int i = 0; i < n; i++) {
 				map[i] = ns(m);
+			}
+			return map;
+		}
+
+		public int[][] nmInt(int n, int m) {
+			int[][] map = new int[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextInt();
+				}
+			}
+			return map;
+		}
+
+		public long[][] nmLong(int n, int m) {
+			long[][] map = new long[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextLong();
+				}
 			}
 			return map;
 		}

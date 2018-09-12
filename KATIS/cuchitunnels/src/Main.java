@@ -4,55 +4,25 @@ import java.util.*;
 class Main {
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
-		int n = scan.nextInt();
-		int m = scan.nextInt();
-		TreeSet<Edge> p = new TreeSet<>();
-		Vertex[] vertices = new Vertex[n];
-		for (int i = 0; i < n; i++) {
-			vertices[i] = new Vertex(i);
+		int[] ar = scan.na(scan.nextInt());
+		Queue<Integer> q = new LinkedList<Integer>();
+		q.add(0);
+		boolean ok = true;
+		for (int i=1;i<ar.length;i++) {
+			if (q.isEmpty()) {
+				ok = false;
+				break;
+			}
+			ar[i]--;
+			ar[q.peek()]--;
+			if (ar[q.peek()] == 0) {
+				q.poll();
+			}
+			if (ar[i] != 0) {
+				q.add(i);
+			}
 		}
-		for (int i = 0; i < m; i++) {
-			int u = scan.nextInt() - 1;
-			int v = scan.nextInt() - 1;
-			int w = scan.nextInt();
-			vertices[u].addEdge(new Edge(w, vertices[v]));
-			vertices[v].addEdge(new Edge(w, vertices[u]));
-		}
-		long max = 0;
-		for (int i = 0; i < n; i++) {
-			
-		}
-		System.out.println(max);
-	}
-
-	static class Vertex {
-		public int id;
-		public boolean visited = false;
-		ArrayList<Edge> edgeList = new ArrayList<>();
-
-		public Vertex(int id) {
-			this.id = id;
-		}
-
-		public void addEdge(Edge child) {
-			this.edgeList.add(child);
-		}
-	}
-
-	static class Edge implements Comparable<Edge> {
-		int weight;
-		Vertex ep;
-
-		public Edge(int weight, Vertex ep) {
-			this.weight = weight;
-			this.ep = ep;
-		}
-
-		@Override
-		public int compareTo(Edge o) {
-			return this.weight - o.weight;
-		}
-
+		System.out.println((ok && q.isEmpty())?"YES":"NO");
 	}
 
 	static class InputReader {
@@ -82,6 +52,15 @@ class Main {
 			}
 			ptrbuf--;
 			return true;
+		}
+
+		public StringBuilder printIntArr(int[] ar, int n) {
+			StringBuilder res = new StringBuilder();
+			for (int i = 0; i < n; i++) {
+				res.append(ar[i] + " ");
+			}
+			res.append("\n");
+			return res;
 		}
 
 		public boolean isSpaceChar(int c) {
@@ -127,6 +106,26 @@ class Main {
 			char[][] map = new char[n][];
 			for (int i = 0; i < n; i++) {
 				map[i] = ns(m);
+			}
+			return map;
+		}
+
+		public int[][] nmInt(int n, int m) {
+			int[][] map = new int[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextInt();
+				}
+			}
+			return map;
+		}
+
+		public long[][] nmLong(int n, int m) {
+			long[][] map = new long[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextLong();
+				}
 			}
 			return map;
 		}

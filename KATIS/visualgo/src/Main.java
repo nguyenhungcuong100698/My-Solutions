@@ -4,55 +4,78 @@ import java.util.*;
 class Main {
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
-		int n = scan.nextInt();
-		int m = scan.nextInt();
-		TreeSet<Edge> p = new TreeSet<>();
-		Vertex[] vertices = new Vertex[n];
+		int n = scan.nextInt(), m = scan.nextInt();
+		Node[] nodes = new Node[n];
 		for (int i = 0; i < n; i++) {
-			vertices[i] = new Vertex(i);
+			nodes[i] = new Node(i);
 		}
 		for (int i = 0; i < m; i++) {
-			int u = scan.nextInt() - 1;
-			int v = scan.nextInt() - 1;
-			int w = scan.nextInt();
-			vertices[u].addEdge(new Edge(w, vertices[v]));
-			vertices[v].addEdge(new Edge(w, vertices[u]));
+			int u = scan.nextInt();
+			int v = scan.nextInt();
+			nodes[u].addEdge(new Edge(nodes[v], scan.nextInt()));
 		}
-		long max = 0;
-		for (int i = 0; i < n; i++) {
-			
+		int sNode = scan.nextInt();
+		int eNode = scan.nextInt();
+		PriorityQueue<Node> queue = new PriorityQueue<>();
+		nodes[sNode].distance = 0;
+		nodes[sNode].added = true;
+		queue.add(nodes[sNode]);
+		while (!queue.isEmpty()) {
+			Node cur = queue.poll();
+			cur.added = true;
+			for (Edge edge : cur.edges) {
+				if (!edge.added) {
+					edge.added = true;
+					int distance = cur.distance + edge.weight;
+					Node target = edge.target;
+					queue.remove(target);
+					if (distance == target.distance) {
+						target.ways += cur.ways;
+					} else if (distance < target.distance) {
+						target.distance = distance;
+						target.ways = cur.ways;
+					}
+					queue.add(target);
+				}
+			}
 		}
-		System.out.println(max);
+		if (nodes[eNode].added) {
+			System.out.println(nodes[eNode].ways);
+		} else {
+			System.out.println(0);
+		}
 	}
 
-	static class Vertex {
+	static class Node implements Comparable<Node> {
 		public int id;
-		public boolean visited = false;
-		ArrayList<Edge> edgeList = new ArrayList<>();
+		public ArrayList<Edge> edges = new ArrayList<>();
+		public int distance = Integer.MAX_VALUE;
+		public boolean added = false;
+		public int ways = 1;
 
-		public Vertex(int id) {
+		public Node(int id) {
 			this.id = id;
 		}
 
-		public void addEdge(Edge child) {
-			this.edgeList.add(child);
-		}
-	}
-
-	static class Edge implements Comparable<Edge> {
-		int weight;
-		Vertex ep;
-
-		public Edge(int weight, Vertex ep) {
-			this.weight = weight;
-			this.ep = ep;
+		public void addEdge(Edge e) {
+			this.edges.add(e);
 		}
 
 		@Override
-		public int compareTo(Edge o) {
-			return this.weight - o.weight;
+		public int compareTo(Node other) {
+			return this.distance - other.distance;
 		}
+	}
 
+	static class Edge {
+		public Node target = null;
+		public int weight = 0;
+		public boolean added = false;
+
+		public Edge(Node to, int w) {
+			this.target = to;
+			this.weight = w;
+		}
 	}
 
 	static class InputReader {
@@ -82,6 +105,15 @@ class Main {
 			}
 			ptrbuf--;
 			return true;
+		}
+
+		public StringBuilder printIntArr(int[] ar, int n) {
+			StringBuilder res = new StringBuilder();
+			for (int i = 0; i < n; i++) {
+				res.append(ar[i] + " ");
+			}
+			res.append("\n");
+			return res;
 		}
 
 		public boolean isSpaceChar(int c) {
@@ -127,6 +159,26 @@ class Main {
 			char[][] map = new char[n][];
 			for (int i = 0; i < n; i++) {
 				map[i] = ns(m);
+			}
+			return map;
+		}
+
+		public int[][] nmInt(int n, int m) {
+			int[][] map = new int[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextInt();
+				}
+			}
+			return map;
+		}
+
+		public long[][] nmLong(int n, int m) {
+			long[][] map = new long[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextLong();
+				}
 			}
 			return map;
 		}

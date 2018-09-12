@@ -1,59 +1,72 @@
 import java.io.*;
 import java.util.*;
 
+
 class Main {
+
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
-		int n = scan.nextInt();
-		int m = scan.nextInt();
-		TreeSet<Edge> p = new TreeSet<>();
-		Vertex[] vertices = new Vertex[n];
-		for (int i = 0; i < n; i++) {
-			vertices[i] = new Vertex(i);
+		int test = scan.nextInt();
+		StringBuilder res = new StringBuilder();
+		while (test-->0) {
+			int counter = 0;
+			Vertex[] list = readGraph(scan.nextInt(),scan.nextInt(), scan);
+			for (int i=0;i<list.length;i++	) {
+				if (!list[i].visited) {
+					bfs(list[i]);
+					counter++;
+				}
+			}
+			res.append((counter-1)+"\n");
 		}
-		for (int i = 0; i < m; i++) {
-			int u = scan.nextInt() - 1;
-			int v = scan.nextInt() - 1;
-			int w = scan.nextInt();
-			vertices[u].addEdge(new Edge(w, vertices[v]));
-			vertices[v].addEdge(new Edge(w, vertices[u]));
-		}
-		long max = 0;
-		for (int i = 0; i < n; i++) {
-			
-		}
-		System.out.println(max);
+		System.out.println(res);
 	}
-
-	static class Vertex {
-		public int id;
-		public boolean visited = false;
-		ArrayList<Edge> edgeList = new ArrayList<>();
-
-		public Vertex(int id) {
-			this.id = id;
-		}
-
-		public void addEdge(Edge child) {
-			this.edgeList.add(child);
+	static void bfs(Vertex u) {
+		u.visited = true;
+		Queue<Vertex> q = new LinkedList<Vertex>();
+		q.add(u);
+		while (!q.isEmpty()) {
+			Vertex cur = q.poll();
+			for (Vertex v : cur.neighbors) {
+				if (!v.visited) {
+					v.visited = true;
+					q.add(v);
+				}
+			}
 		}
 	}
+	public static Vertex[] readGraph(int nVertices, int nEdges, InputReader scan) {
+        Vertex[] vertices = new Vertex[nVertices];
+        for (int i = 0; i < nVertices; ++i) {
+            vertices[i] = new Vertex(i);
+        }
+        for (int i = 0; i < nEdges; ++i) {
+            int u = scan.nextInt();
+            int v = scan.nextInt();
+            vertices[u].addNeighbor(vertices[v]);
+            vertices[v].addNeighbor(vertices[u]);
+        }
+        return vertices;
+    }
 
-	static class Edge implements Comparable<Edge> {
-		int weight;
-		Vertex ep;
+    static class Vertex {
 
-		public Edge(int weight, Vertex ep) {
-			this.weight = weight;
-			this.ep = ep;
-		}
+        public int id;
+        public List<Vertex> neighbors = new ArrayList<>();
+        public boolean visited = false;
+        
+        public Vertex(int id) {
+            this.id = id;
+        }
+        
+        public int getDeg(){
+            return this.neighbors.size();
+        }
 
-		@Override
-		public int compareTo(Edge o) {
-			return this.weight - o.weight;
-		}
-
-	}
+        public void addNeighbor(Vertex child) {
+            neighbors.add(child);
+        }
+    }
 
 	static class InputReader {
 
@@ -82,6 +95,15 @@ class Main {
 			}
 			ptrbuf--;
 			return true;
+		}
+
+		public StringBuilder printIntArr(int[] ar, int n) {
+			StringBuilder res = new StringBuilder();
+			for (int i = 0; i < n; i++) {
+				res.append(ar[i] + " ");
+			}
+			res.append("\n");
+			return res;
 		}
 
 		public boolean isSpaceChar(int c) {
@@ -127,6 +149,26 @@ class Main {
 			char[][] map = new char[n][];
 			for (int i = 0; i < n; i++) {
 				map[i] = ns(m);
+			}
+			return map;
+		}
+
+		public int[][] nmInt(int n, int m) {
+			int[][] map = new int[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextInt();
+				}
+			}
+			return map;
+		}
+
+		public long[][] nmLong(int n, int m) {
+			long[][] map = new long[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextLong();
+				}
 			}
 			return map;
 		}

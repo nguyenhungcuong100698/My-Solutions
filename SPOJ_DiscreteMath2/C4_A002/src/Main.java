@@ -2,57 +2,40 @@ import java.io.*;
 import java.util.*;
 
 class Main {
+
 	public static void main(String[] args) throws IOException {
 		InputReader scan = new InputReader();
-		int n = scan.nextInt();
-		int m = scan.nextInt();
-		TreeSet<Edge> p = new TreeSet<>();
-		Vertex[] vertices = new Vertex[n];
-		for (int i = 0; i < n; i++) {
-			vertices[i] = new Vertex(i);
-		}
-		for (int i = 0; i < m; i++) {
-			int u = scan.nextInt() - 1;
-			int v = scan.nextInt() - 1;
-			int w = scan.nextInt();
-			vertices[u].addEdge(new Edge(w, vertices[v]));
-			vertices[v].addEdge(new Edge(w, vertices[u]));
-		}
-		long max = 0;
-		for (int i = 0; i < n; i++) {
-			
-		}
-		System.out.println(max);
+		int[] ar = scan.na(scan.nextInt());
+		sort(ar, 0, ar.length - 1);
+		System.out.println(scan.printIntArr(ar, ar.length));
 	}
 
-	static class Vertex {
-		public int id;
-		public boolean visited = false;
-		ArrayList<Edge> edgeList = new ArrayList<>();
-
-		public Vertex(int id) {
-			this.id = id;
+	static void merge(int[] ar, int left, int middle, int right) {
+		int[] bucket = new int[right - left + 1];
+		for (int i = 0; i <= right - left; i++) {
+			bucket[i] = ar[i + left];
 		}
-
-		public void addEdge(Edge child) {
-			this.edgeList.add(child);
+		int i = 0, j = middle - left + 1, k = left;
+		while (i <= middle - left && j <= right - left) {
+			ar[k++] = (bucket[i] <= bucket[j]) ? bucket[i++] : bucket[j++];
+		}
+		while (i <= middle - left) {
+			ar[k++] = bucket[i++];
+		}
+		while (j <= right - left) {
+			ar[k++] = bucket[j++];
 		}
 	}
 
-	static class Edge implements Comparable<Edge> {
-		int weight;
-		Vertex ep;
+	static void sort(int[] ar, int left, int right) {
+		if (left < right) {
+			int middle = (left + right) / 2;
 
-		public Edge(int weight, Vertex ep) {
-			this.weight = weight;
-			this.ep = ep;
+			sort(ar, left, middle);
+			sort(ar, middle + 1, right);
+
+			merge(ar, left, middle, right);
 		}
-
-		@Override
-		public int compareTo(Edge o) {
-			return this.weight - o.weight;
-		}
-
 	}
 
 	static class InputReader {
@@ -82,6 +65,15 @@ class Main {
 			}
 			ptrbuf--;
 			return true;
+		}
+
+		public StringBuilder printIntArr(int[] ar, int n) {
+			StringBuilder res = new StringBuilder();
+			for (int i = 0; i < n; i++) {
+				res.append(ar[i] + " ");
+			}
+			res.append("\n");
+			return res;
 		}
 
 		public boolean isSpaceChar(int c) {
@@ -127,6 +119,26 @@ class Main {
 			char[][] map = new char[n][];
 			for (int i = 0; i < n; i++) {
 				map[i] = ns(m);
+			}
+			return map;
+		}
+
+		public int[][] nmInt(int n, int m) {
+			int[][] map = new int[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextInt();
+				}
+			}
+			return map;
+		}
+
+		public long[][] nmLong(int n, int m) {
+			long[][] map = new long[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					map[i][j] = nextLong();
+				}
 			}
 			return map;
 		}
